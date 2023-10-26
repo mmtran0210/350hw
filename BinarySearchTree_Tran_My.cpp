@@ -104,10 +104,10 @@ private:
         if (current == nullptr) {
             return;
         }
-        // Travese left 
+        // keep travese left until theres none to visit
         inOrderTr(current->left);
         std::cout << current->data << ", ";
-        // Traverse right
+        // vice versa 
         inOrderTr(current->right);
     }
 
