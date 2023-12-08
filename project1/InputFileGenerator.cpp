@@ -1,3 +1,5 @@
+//My Tran - CSCE 350 - Project 1
+
 #include <random>
 #include <vector>
 #include <fstream>

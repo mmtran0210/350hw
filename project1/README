@@ -89,7 +89,7 @@ End Function
 
 ```
 
-Compliation Instructions: 
+Complilation Instructions: 
 
 1> First, you will need to compile the InputFileGenerator.cpp file. This file generates the 75 input files in total with the input size of 10, 100 and 1000 (25 each) for the QuickSort algorithm. To compile this file, run the following command in the terminal:
 
@@ -103,3 +103,26 @@ then run the executable with the following command:
 
 ``` make all ```
 
+This will run the Makefile which would compile the QuickSort.cpp file with 25 input files of size 10, 100 and 1000 each in the same directory.
+
+Sample Output:
+
+root@tramtrukemtrinh:/mnt/c/Users/mimin/Desktop/350hw/project1# make
+g++ -Wall -std=c++11 -o Tran_My_QuickSort Tran_My_QuickSort.cpp
+./Tran_My_QuickSort input10_0.txt input10_0.out ExecutionTime_Data.txt
+./Tran_My_QuickSort input10_1.txt input10_1.out ExecutionTime_Data.txt
+./Tran_My_QuickSort input10_10.txt input10_10.out ExecutionTime_Data.txt
+./Tran_My_QuickSort input10_11.txt input10_11.out ExecutionTime_Data.txt
+./Tran_My_QuickSort input10_12.txt input10_12.out ExecutionTime_Data.txt
+
+QuickSort will be executed on 25 input files with each input size, and will keep appending data on the ExecutionData.txt file.
+
+ExecutionData.txt then will be used to generate the ExecutionTime.txt file in the table format, and calculate the average execution time for each input size output to averageExecutionTime.txt
+
+Check Tran_My_averageExecutionTime.txt and Tran_My_ExecutionTime.txt for the sample output.
+
+3> After you done, run 
+
+``` make clean ```
+
+And Boom! Everything is gone! Run again if needed.
