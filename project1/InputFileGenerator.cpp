@@ -1,6 +1,7 @@
-#include <fstream>
 #include <random>
-#include <set>
+#include <vector>
+#include <fstream>
+#include <algorithm>
 
 int main() {
     std::random_device rd;  // Random number device
@@ -10,15 +11,19 @@ int main() {
     for (int size = 10; size <= 1000; size *= 10) {
         for (int i = 0; i < 25; ++i) {
             std::ofstream file("input" + std::to_string(size) + "_" + std::to_string(i) + ".txt");
-            std::set<float> numbers;
+            std::vector<float> numbers;
             while (numbers.size() < size) {
-                numbers.insert(distribution(generator));
+                numbers.push_back(distribution(generator));
             }
+            // Shuffle the numbers to ensure they are unsorted
+            std::shuffle(numbers.begin(), numbers.end(), generator);
             for (const auto& num : numbers) {
-                file << num << "\n";
+                file << num << " ";
             }
+            file << "\n";
         }
     }
 
     return 0;
 }
+

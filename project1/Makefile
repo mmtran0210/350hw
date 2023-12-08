@@ -15,16 +15,25 @@ INPUTS = $(wildcard input10_*.txt input100_*.txt input1000_*.txt)
 # Output files
 OUTPUTS = $(INPUTS:.txt=.out)
 
+# Execution time file
+EXEC_TIME_FILE = ExecutionTime_Data.txt
+
+# Input Generator file
+INPUT_GENERATOR = InputFileGenerator.exe
+
+# Average execution time file
+AVG_EXEC_TIME_FILE = Tran_My_averageExecutionTime.txt
+
+# Formatted execution time file
+FORMATTED_EXEC_TIME_FILE = Tran_My_ExecutionTime.txt
+
 all: $(TARGET) $(OUTPUTS)
 
 $(TARGET): $(TARGET).cpp
 	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).cpp
 
 %.out: %.txt $(TARGET)
-	./$(TARGET) $< $@ "Tran_My_executionTime.txt" "Tran_My_averageExecutionTime.txt"
+	./$(TARGET) $< $@ $(EXEC_TIME_FILE)
 
 clean:
-	del /F /Q $(TARGET).exe $(OUTPUTS) "Tran_My_executionTime.txt" "Tran_My_averageExecutionTime.txt" $(INPUTS)
-
-
-
+	-rm -f $(TARGET) $(OUTPUTS) $(EXEC_TIME_FILE) $(AVG_EXEC_TIME_FILE) $(FORMATTED_EXEC_TIME_FILE) $(INPUT_GENERATOR)

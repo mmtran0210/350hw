@@ -5,6 +5,7 @@
 #include <chrono>
 #include <numeric>
 #include <iomanip>
+#include <map>
 
 // the median of three numbers for picking pivot
 float medianOfThree(float a, float b, float c) {
@@ -49,57 +50,89 @@ void quickSort(std::vector<float>& arr, int low, int high) {
     }
 }
 
-void doQuickSort(const char* inputFile, const char* outputFile, const char* timeFile, const char* avgTimeFile) {
+// Function to perform QuickSort and record execution time to ExecutionData.txt
+void doQuickSort(const char* inputFile, const char* outputFile, const char* timeFile) {
     std::ifstream input(inputFile);
     std::ofstream output(outputFile);
     std::ofstream timeOutput(timeFile, std::ios_base::app); // Open in append mode
-    std::ofstream avgTimeOutput(avgTimeFile, std::ios_base::app); // Open in append mode
     std::vector<float> arr;
-    std::vector<long long> times;
     float num;
 
     // Read numbers from file
     while (input >> num)
         arr.push_back(num);
 
-    // Create a copy of the original unsorted array
-    std::vector<float> arrCopy = arr;
+    // Record start time
+    auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < 25; ++i) {
-        // Record start time
-        auto start = std::chrono::high_resolution_clock::now();
+    // Perform QuickSort
+    quickSort(arr, 0, arr.size() - 1);
 
-        // Perform QuickSort on the copy
-        quickSort(arrCopy, 0, arrCopy.size() - 1);
+    // Record end time
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-        // Record end time
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-
-        times.push_back(duration.count());
-
-        // Write input size and execution time to time file
-        timeOutput << std::setw(10) << arr.size() << "    " << std::setprecision(2) << std::scientific << static_cast<double>(duration.count()) << "\n";
-
-        std::cout << "Time taken by QuickSort: " << std::setprecision(2) << std::scientific << duration.count() << " microseconds" << std::endl;
-    }
+    // Write input size and execution time to time file
+    timeOutput << arr.size() << "    " << duration.count() << "\n";
 
     // Write sorted numbers to output file
-    for (std::vector<float>::size_type i = 0; i < arrCopy.size(); i++)
-        output << arrCopy[i] << " ";
+    for (const auto& value : arr)
+        output << value << " ";
+}
 
-    // Compute average execution time
-    long long sum = std::accumulate(times.begin(), times.end(), 0LL);
-    long long avgTime = sum / times.size();
+// Function to calculate average execution times
+void writeAverageTimesFile(const char* timeFile, const char* avgTimeFile) {
+    std::ifstream timeInput(timeFile);
+    std::ofstream avgTimeOutput(avgTimeFile);
+    std::map<int, std::vector<long long>> executionTimes; // map input size to their execution times
+    int size;
+    long long time;
 
-    // Write input size and average execution time to average time file
-    avgTimeOutput << std::setw(10) << arr.size() << "    " << std::setprecision(2) << std::scientific << static_cast<double>(avgTime) << "\n";
+    // Read execution times from file
+    while (timeInput >> size >> time) {
+        executionTimes[size].push_back(time);
+    }
+
+    // Write headers to the average execution time file
+    avgTimeOutput << std::left << std::setw(12) << "Input Size" << " || " << std::setw(25) << " Average Execution Time" << "\n";
+    avgTimeOutput << std::string(40, '-') << "\n"; // Separator line
+
+    // Compute and write average execution times in a tabular format
+    for (const auto& pair : executionTimes) {
+        long long sum = std::accumulate(pair.second.begin(), pair.second.end(), 0LL);
+        long long avgTime = sum / pair.second.size();
+        avgTimeOutput << std::left << std::setw(12) << pair.first << " || " << std::setw(25) << std::scientific << std::setprecision(2) << avgTime << "\n";
+    }
+}
+
+void writeExecutionFile(const char* unformattedTimeFile, const char* formattedTimeFile) {
+    std::ifstream timeInput(unformattedTimeFile);
+    std::ofstream formattedTimeOutput(formattedTimeFile);
+    int size;
+    long long time;
+
+    // Headers for the formatted time file
+    formattedTimeOutput << std::left << std::setw(12) << "Input Size" << " || " << std::setw(25) << " Execution Time" << "\n";
+    formattedTimeOutput << std::string(40, '-') << "\n"; // Separator line
+
+    // Read times from data file and write in a table format
+    while (timeInput >> size >> time) {
+        formattedTimeOutput << std::left << std::setw(12) << size << " || " << std::setw(25) << std::scientific << std::setprecision(2) << time << "\n";
+    }
 }
 
 
+
 int main(int argc, char* argv[]) {
-    
-    doQuickSort(argv[1], argv[2], "Tran_My_executionTime.txt", "Tran_My_averageExecutionTime.txt");
+    // Perform QuickSort and record execution time for each input file
+    doQuickSort(argv[1], argv[2], argv[3]);
+
+    // After all input files have been processed, calculate average execution times
+    writeAverageTimesFile(argv[3], "Tran_My_averageExecutionTime.txt");
+
+    // Format the execution times into a table
+    writeExecutionFile(argv[3], "Tran_My_ExecutionTime.txt");
+
     return 0;
 }
 
